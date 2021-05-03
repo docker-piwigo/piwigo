@@ -1,0 +1,54 @@
+version: '3'
+services:
+    docker-piwigo:
+        container_name: docker_piwigo
+        image: docker-piwigo
+        networks: 
+            - piwigo
+        volumes:
+            # ici fichiers temporaires créés dans container ou dans images ? dans dossier local?=> stocke dans image du container
+            - ./piwigo_docs:/var/www/galleries
+            # - /home/piwigo/data/local:/var/www/local
+            # - /home/piwigo/data/plugins:/var/www/plugins
+            # - /home/piwigo/data/themes:/var/www/themes
+            # - /home/piwigo/cache:/var/www/_data/i
+            # - /home/piwigo/upload:/var/www/upload
+            # - /var/log
+            # - /var/log/piwigo:/var/log/apache2
+
+            #- /var/www/galleries, "/var/www/themes", "/var/www/plugins", "/var/www/local", "/var/www/_data/i", "/config"
+        # ports:
+        #     - 80:80
+        # links:
+        #     - mysql
+
+    mysql:
+        container_name: mysql_piwigo
+        image: mysql:8.0.18
+        # command: --default-authentication-plugin=mysql_native_password
+        command: ["--default-authentication-plugin=mysql_native_password"]
+        # restart: always
+        networks: 
+            - piwigo    
+        # volumes:
+        #     - /home/piwigo/mysql/:/var/lib/mysql
+        environment:
+            MYSQL_USER: "${TAG_USER}"
+            MYSQL_PASSWORD: "${PASSWORD}"
+            MYSQL_DATABASE: "${DATABASE}"
+            MYSQL_RANDOM_ROOT_PASSWORD: "true"
+    
+    ngnix:
+        container_name: ngnix_piwigo
+        image: nginx:latest
+        links:
+            - docker-piwigo
+        volumes: 
+            - ./nginx.conf:/etc/nginx/conf.d/default.conf
+        networks:
+            - piwigo
+        ports:
+            - 80:80
+
+networks:
+    piwigo:
