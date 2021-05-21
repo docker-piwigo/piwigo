@@ -8,7 +8,7 @@ RUN apt-get -y install libpng-dev
 # gd => bibliothèque mais quoi?
 # exif => ??
 RUN docker-php-ext-install mysqli gd exif
-ADD piwigo/ /var/www/html/
+COPY piwigo/ /var/www/html/
 # ici 777 = un peu trop de droits accordés à l'utilisateur étant donné que l'on ne connait pas trop ce qu'il y a dans le code
 # attention ici pas une bonne idée d'autoriser partout, plutot aller chercher (en particulier le -R = récursif peut être un pb)
 # mieux de mettre 755 pour dossier et fichiers qui sont dedans => 660 ou 440

@@ -3,7 +3,7 @@ services:
     docker-piwigo:
         container_name: docker-piwigo
         build: .
-        # image: docker-piwigo
+        image: docker-piwigo
         volumes:
             # ici fichiers temporaires créés dans dossier local=> stocke dans image du container
             - data_piwigo:/var/www/galleries
