@@ -4,11 +4,26 @@ FROM php:7.3-apache
 RUN apt-get update &&  apt-get upgrade -y
 # libpng-dev = intallé car gd en a besoin
 # rq: libpng et libpng-dev => différence avec -dev = on a description de ce qu'il y a dedans (indispensable pour c et c++)
-RUN apt-get -y install libpng-dev
+RUN apt-get -y install libpng-dev curl unzip
 # gd => bibliothèque mais quoi?
 # exif => ??
 RUN docker-php-ext-install mysqli gd exif
-COPY piwigo/ /var/www/html/
+# il y a des soucis quand ont copie directeent le dossier piwigo avec la commande:
+# COPY piwigo/ /var/www/html/
+# donc à la place, on va directement le télécharger sur le site avec cette commande:
+WORKDIR /var/www/
+
+
+RUN curl -o piwigo.zip http://piwigo.org/download/dlcounter.php?code=latest
+# puis dézipper le dossier piwigo
+RUN unzip piwigo.zip
+RUN rm -rf html
+RUN mv piwigo html
+# supprimer le fichier zip
+RUN rm piwigo.zip
+
+
+
 # ici 777 = un peu trop de droits accordés à l'utilisateur étant donné que l'on ne connait pas trop ce qu'il y a dans le code
 # attention ici pas une bonne idée d'autoriser partout, plutot aller chercher (en particulier le -R = récursif peut être un pb)
 # mieux de mettre 755 pour dossier et fichiers qui sont dedans => 660 ou 440
